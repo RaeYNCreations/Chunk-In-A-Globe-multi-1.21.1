@@ -1,0 +1,82 @@
+plugins {
+    id 'idea'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.78'
+}
+
+base {
+    archivesName = "${mod_name}-neoforge-${minecraft_version}"
+}
+
+neoForge {
+    version = project.neoforge_version
+
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+            sourceSet(project(":common").sourceSets.main)
+        }
+    }
+
+    runs {
+        client {
+            client()
+            ideName = 'NeoForge Client'
+        }
+        server {
+            server()
+            ideName = 'NeoForge Server'
+        }
+        data {
+            data()
+            ideName = 'NeoForge Data'
+            programArguments.addAll '--mod', mod_id, '--all',
+                    '--output', file('src/generated/resources/').absolutePath,
+                    '--existing', file('src/main/resources/').absolutePath
+        }
+    }
+}
+
+sourceSets.main.resources.srcDir 'src/generated/resources'
+
+dependencies {
+    compileOnly project(":common")
+}
+
+tasks.named("compileJava") {
+    source(project(":common").sourceSets.main.allSource)
+}
+tasks.withType(Javadoc).configureEach {
+    source(project(":common").sourceSets.main.allJava)
+}
+tasks.named("sourcesJar", Jar) {
+    from(project(":common").sourceSets.main.allSource)
+}
+
+processResources {
+    from project(":common").sourceSets.main.resources
+
+    def expandProps = [
+        "version"                    : version,
+        "group"                      : project.group,
+        "minecraft_version"          : minecraft_version,
+        "minecraft_version_range"    : minecraft_version_range,
+        "neoforge_version"           : neoforge_version,
+        "neoforge_loader_version_range": neoforge_loader_version_range,
+        "mod_name"                   : mod_name,
+        "mod_author"                 : mod_author,
+        "mod_id"                     : mod_id,
+        "license"                    : license,
+        "description"                : project.description,
+        "credits"                    : credits
+    ]
+    filesMatching(['META-INF/neoforge.mods.toml', 'META-INF/mods.toml', 'pack.mcmeta', '*.mixins.json']) {
+        expand expandProps
+    }
+    inputs.properties(expandProps)
+}

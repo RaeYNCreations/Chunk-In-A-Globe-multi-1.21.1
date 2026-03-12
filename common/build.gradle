@@ -1,0 +1,39 @@
+plugins {
+    id 'idea'
+    id 'java'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.78'
+}
+
+base {
+    archivesName = "${mod_name}-common-${minecraft_version}"
+}
+
+// Use moddev in "only compile against MC" mode — no runs, no full mod setup.
+// This replaces org.spongepowered.gradle.vanilla which was the MultiLoader
+// template's way of getting a Minecraft compile dependency for the common module.
+neoForge {
+    version = project.neoforge_version
+    // No runs block — common is not a runnable subproject.
+}
+
+dependencies {
+    compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.5'
+    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId base.archivesName.get()
+            from components.java
+        }
+    }
+    repositories {
+        if (System.getenv("local_maven") != null) {
+            maven {
+                url "file://" + System.getenv("local_maven")
+            }
+        }
+    }
+}
