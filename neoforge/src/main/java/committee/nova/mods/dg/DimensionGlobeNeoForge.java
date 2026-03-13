@@ -54,6 +54,7 @@ public class DimensionGlobeNeoForge {
         CommonClass.globeBlockItem = globeBlockItem1.get();
         CommonClass.globeBlockEntityType = globeBlockEntityType1.get();
         CommonClass.globeItemGroup = globeItemGroup1.get();
+        CommonClass.globeCrafting = globeCrafting1.get();
     }
 
     private void clientSetUp(FMLClientSetupEvent event) {

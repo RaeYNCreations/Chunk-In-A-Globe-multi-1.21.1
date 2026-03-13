@@ -75,7 +75,7 @@ public class GlobeBlockEntity extends BlockEntity {
 			tag.putInt("return_x", returnPos.getX());
 			tag.putInt("return_y", returnPos.getY());
 			tag.putInt("return_z", returnPos.getZ());
-			tag.putString("return_dim", returnDimType.registry().toString());
+			tag.putString("return_dim", returnDimType.location().toString());
 		}
 		super.saveAdditional(tag, provider);
 	}
